@@ -1,0 +1,9 @@
+# Bozloader Dependencies
+# Python 3.11+
+
+# Web Framework
+Flask==3.0.0
+gunicorn==21.2.0
+
+# Security
+Werkzeug==3.0.1

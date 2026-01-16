@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - Upload</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #5DCDCD;
+            --teal-dark: #3BA5A5;
+            --light-blue: #B8E0E0;
+            --sky-blue: #E0F4F4;
+            --pink: #E83D5F;
+            --pink-dark: #C42848;
+            --yellow: #FFD166;
+            --yellow-light: #FFF0CC;
+            --tan: #E5B989;
+            --cream: #FDF8F3;
+            --white: #FFFFFF;
+            --dark: #2C3E50;
+            --gray: #7F8C8D;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--sky-blue) 0%, var(--light-blue) 50%, var(--teal) 100%);
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+
+        .header { text-align: center; padding: 30px 0; animation: fadeInDown 0.6s ease-out; }
+
+        .logo {
+            width: 140px; height: 140px; border-radius: 50%;
+            box-shadow: 0 8px 30px rgba(93, 205, 205, 0.4);
+            margin-bottom: 15px; transition: transform 0.3s ease;
+        }
+        .logo:hover { transform: scale(1.05) rotate(3deg); }
+
+        .app-title {
+            font-family: 'Quicksand', sans-serif; font-size: 2.8rem;
+            font-weight: 700; color: var(--dark); margin-bottom: 5px;
+            text-shadow: 2px 2px 0 var(--white);
+        }
+
+        .app-subtitle { font-size: 1.1rem; color: var(--teal-dark); font-weight: 600; }
+
+        .user-info {
+            background: var(--white); border-radius: 50px; padding: 10px 25px;
+            display: inline-flex; align-items: center; gap: 10px; margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .user-icon {
+            width: 30px; height: 30px; background: var(--yellow); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
+        }
+
+        .user-email { color: var(--gray); font-weight: 600; }
+
+        .tabs { display: flex; gap: 10px; margin: 30px 0 20px; animation: fadeInUp 0.6s ease-out 0.2s both; }
+
+        .tab {
+            flex: 1; padding: 18px 25px; border: none; border-radius: 20px 20px 0 0;
+            font-family: 'Quicksand', sans-serif; font-size: 1.1rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        .tab.movie { background: var(--pink); color: var(--white); }
+        .tab.movie:hover, .tab.movie.active { background: var(--pink-dark); transform: translateY(-3px); }
+        .tab.tv { background: var(--yellow); color: var(--dark); }
+        .tab.tv:hover, .tab.tv.active { background: #E8B33D; transform: translateY(-3px); }
+        .tab:not(.active) { opacity: 0.7; transform: translateY(5px); }
+        .tab-icon { font-size: 1.4rem; }
+
+        .upload-card {
+            background: var(--white); border-radius: 0 0 30px 30px; padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1); animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .upload-section { display: none; }
+        .upload-section.active { display: block; }
+
+        .instructions {
+            background: var(--cream); border-left: 4px solid var(--yellow);
+            padding: 20px 25px; border-radius: 0 15px 15px 0; margin-bottom: 30px;
+        }
+
+        .instructions-title {
+            font-family: 'Quicksand', sans-serif; font-weight: 700;
+            color: var(--dark); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+        }
+
+        .instructions-text { color: var(--gray); line-height: 1.7; white-space: pre-line; }
+
+        .drop-zone {
+            border: 3px dashed var(--teal); border-radius: 25px; padding: 60px 40px;
+            text-align: center; background: var(--sky-blue); transition: all 0.3s ease;
+            cursor: pointer; position: relative;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--pink); background: var(--yellow-light); transform: scale(1.01);
+        }
+
+        .drop-zone-icon { font-size: 4rem; margin-bottom: 15px; }
+        .drop-zone-text { font-size: 1.2rem; color: var(--teal-dark); font-weight: 600; margin-bottom: 10px; }
+        .drop-zone-subtext { color: var(--gray); font-size: 0.95rem; }
+        .file-input { display: none; }
+
+        .file-preview {
+            display: none; background: var(--sky-blue); border-radius: 20px;
+            padding: 25px; margin-top: 20px; animation: fadeInUp 0.4s ease-out;
+        }
+        .file-preview.show { display: block; }
+
+        .file-info { display: flex; align-items: center; gap: 15px; }
+
+        .file-icon {
+            width: 60px; height: 60px; background: var(--teal); border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: var(--white);
+        }
+
+        .file-details { flex: 1; }
+        .file-name { font-weight: 700; color: var(--dark); font-size: 1.1rem; word-break: break-all; }
+        .file-size { color: var(--gray); font-size: 0.9rem; margin-top: 4px; }
+
+        .remove-file {
+            background: var(--pink); color: var(--white); border: none;
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            font-size: 1.2rem; transition: all 0.3s ease;
+        }
+        .remove-file:hover { background: var(--pink-dark); transform: scale(1.1); }
+
+        .progress-container { display: none; margin-top: 25px; }
+        .progress-container.show { display: block; }
+        .progress-bar { height: 12px; background: var(--light-blue); border-radius: 10px; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--teal) 0%, var(--pink) 100%);
+            width: 0%; transition: width 0.3s ease; border-radius: 10px;
+        }
+        .progress-text { text-align: center; margin-top: 10px; color: var(--gray); font-weight: 600; }
+
+        .upload-btn {
+            display: none; width: 100%; padding: 20px; margin-top: 25px;
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+            color: var(--white); border: none; border-radius: 15px;
+            font-family: 'Quicksand', sans-serif; font-size: 1.2rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(93, 205, 205, 0.4);
+        }
+        .upload-btn.show { display: block; }
+        .upload-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(93, 205, 205, 0.5); }
+        .upload-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .success-message {
+            display: none; background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: var(--white); padding: 30px; border-radius: 20px;
+            text-align: center; margin-top: 25px; animation: bounceIn 0.6s ease-out;
+        }
+        .success-message.show { display: block; }
+        .success-icon { font-size: 3rem; margin-bottom: 15px; }
+        .success-title { font-family: 'Quicksand', sans-serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+
+        .error-message {
+            display: none; background: linear-gradient(135deg, var(--pink) 0%, var(--pink-dark) 100%);
+            color: var(--white); padding: 20px; border-radius: 15px;
+            text-align: center; margin-top: 20px;
+        }
+        .error-message.show { display: block; }
+
+        .footer-links { text-align: center; margin-top: 30px; animation: fadeInUp 0.6s ease-out 0.4s both; }
+
+        .footer-link {
+            color: var(--dark); text-decoration: none; font-weight: 600;
+            padding: 10px 20px; background: rgba(255,255,255,0.7);
+            border-radius: 25px; transition: all 0.3s ease; margin: 0 5px; display: inline-block;
+        }
+        .footer-link:hover { background: var(--white); transform: translateY(-2px); }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.5); } 50% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .app-title { font-size: 2rem; }
+            .tabs { flex-direction: column; gap: 8px; }
+            .tab { border-radius: 15px; }
+            .upload-card { padding: 25px; border-radius: 25px; }
+            .drop-zone { padding: 40px 20px; }
+            .logo { width: 100px; height: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{{ url_for('serve_image', filename='bosley_logo.png') }}" alt="Bosley" class="logo">
+            <h1 class="app-title">{{ app_name }}</h1>
+            <p class="app-subtitle">Upload your media to Plex</p>
+            <div class="user-info">
+                <div class="user-icon">👤</div>
+                <span class="user-email">{{ user_email }}</span>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab movie active" onclick="switchTab('movie')">
+                <span class="tab-icon">🎬</span> Movies
+            </button>
+            <button class="tab tv" onclick="switchTab('tv')">
+                <span class="tab-icon">📺</span> TV Shows
+            </button>
+        </div>
+
+        <div class="upload-card">
+            <div id="movie-section" class="upload-section active">
+                <div class="instructions">
+                    <div class="instructions-title"><span>📋</span> Upload Instructions</div>
+                    <div class="instructions-text">{{ movie_instructions }}</div>
+                </div>
+                <div class="drop-zone" id="movie-drop-zone" onclick="document.getElementById('movie-file-input').click()">
+                    <div class="drop-zone-icon">🎬</div>
+                    <div class="drop-zone-text">Drag & drop your movie here</div>
+                    <div class="drop-zone-subtext">or click to browse files</div>
+                </div>
+                <input type="file" id="movie-file-input" class="file-input" accept=".mp4,.mkv,.avi,.mov,.wmv,.flv,.webm,.m4v,.mpg,.mpeg,.ts,.vob,.iso">
+                <div class="file-preview" id="movie-file-preview">
+                    <div class="file-info">
+                        <div class="file-icon">🎬</div>
+                        <div class="file-details">
+                            <div class="file-name" id="movie-file-name"></div>
+                            <div class="file-size" id="movie-file-size"></div>
+                        </div>
+                        <button class="remove-file" onclick="removeFile('movie')">✕</button>
+                    </div>
+                </div>
+                <div class="progress-container" id="movie-progress">
+                    <div class="progress-bar"><div class="progress-fill" id="movie-progress-fill"></div></div>
+                    <div class="progress-text" id="movie-progress-text">Uploading... 0%</div>
+                </div>
+                <button class="upload-btn" id="movie-upload-btn" onclick="uploadFile('movie')">🚀 Upload Movie</button>
+                <div class="success-message" id="movie-success">
+                    <div class="success-icon">🎉</div>
+                    <div class="success-title">Upload Successful!</div>
+                    <p>You'll receive an email when your upload is reviewed.</p>
+                </div>
+                <div class="error-message" id="movie-error"></div>
+            </div>
+
+            <div id="tv-section" class="upload-section">
+                <div class="instructions">
+                    <div class="instructions-title"><span>📋</span> Upload Instructions</div>
+                    <div class="instructions-text">{{ tv_instructions }}</div>
+                </div>
+                <div class="drop-zone" id="tv-drop-zone" onclick="document.getElementById('tv-file-input').click()">
+                    <div class="drop-zone-icon">📺</div>
+                    <div class="drop-zone-text">Drag & drop your TV episode here</div>
+                    <div class="drop-zone-subtext">or click to browse files</div>
+                </div>
+                <input type="file" id="tv-file-input" class="file-input" accept=".mp4,.mkv,.avi,.mov,.wmv,.flv,.webm,.m4v,.mpg,.mpeg,.ts,.vob,.iso">
+                <div class="file-preview" id="tv-file-preview">
+                    <div class="file-info">
+                        <div class="file-icon">📺</div>
+                        <div class="file-details">
+                            <div class="file-name" id="tv-file-name"></div>
+                            <div class="file-size" id="tv-file-size"></div>
+                        </div>
+                        <button class="remove-file" onclick="removeFile('tv')">✕</button>
+                    </div>
+                </div>
+                <div class="progress-container" id="tv-progress">
+                    <div class="progress-bar"><div class="progress-fill" id="tv-progress-fill"></div></div>
+                    <div class="progress-text" id="tv-progress-text">Uploading... 0%</div>
+                </div>
+                <button class="upload-btn" id="tv-upload-btn" onclick="uploadFile('tv')">🚀 Upload TV Episode</button>
+                <div class="success-message" id="tv-success">
+                    <div class="success-icon">🎉</div>
+                    <div class="success-title">Upload Successful!</div>
+                    <p>You'll receive an email when your upload is reviewed.</p>
+                </div>
+                <div class="error-message" id="tv-error"></div>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <a href="/my-uploads" class="footer-link">📋 My Uploads</a>
+        </div>
+    </div>
+
+    <script>
+        const selectedFiles = { movie: null, tv: null };
+
+        function switchTab(type) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelector('.tab.' + type).classList.add('active');
+            document.querySelectorAll('.upload-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(type + '-section').classList.add('active');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function handleFileSelect(type, file) {
+            selectedFiles[type] = file;
+            document.getElementById(type + '-file-name').textContent = file.name;
+            document.getElementById(type + '-file-size').textContent = formatFileSize(file.size);
+            document.getElementById(type + '-file-preview').classList.add('show');
+            document.getElementById(type + '-upload-btn').classList.add('show');
+            document.getElementById(type + '-drop-zone').style.display = 'none';
+            document.getElementById(type + '-success').classList.remove('show');
+            document.getElementById(type + '-error').classList.remove('show');
+        }
+
+        function removeFile(type) {
+            selectedFiles[type] = null;
+            document.getElementById(type + '-file-input').value = '';
+            document.getElementById(type + '-file-preview').classList.remove('show');
+            document.getElementById(type + '-upload-btn').classList.remove('show');
+            document.getElementById(type + '-drop-zone').style.display = 'block';
+        }
+
+        async function uploadFile(type) {
+            const file = selectedFiles[type];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('media_type', type);
+            
+            const progressContainer = document.getElementById(type + '-progress');
+            const progressFill = document.getElementById(type + '-progress-fill');
+            const progressText = document.getElementById(type + '-progress-text');
+            const uploadBtn = document.getElementById(type + '-upload-btn');
+            
+            progressContainer.classList.add('show');
+            uploadBtn.disabled = true;
+            
+            try {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        progressFill.style.width = percent + '%';
+                        progressText.textContent = 'Uploading... ' + percent + '%';
+                    }
+                });
+                
+                xhr.addEventListener('load', () => {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            progressContainer.classList.remove('show');
+                            document.getElementById(type + '-file-preview').classList.remove('show');
+                            document.getElementById(type + '-upload-btn').classList.remove('show');
+                            document.getElementById(type + '-success').classList.add('show');
+                            selectedFiles[type] = null;
+                            document.getElementById(type + '-file-input').value = '';
+                        } else {
+                            showError(type, response.error || 'Upload failed');
+                        }
+                    } else {
+                        const response = JSON.parse(xhr.responseText);
+                        showError(type, response.error || 'Upload failed');
+                    }
+                    uploadBtn.disabled = false;
+                });
+                
+                xhr.addEventListener('error', () => {
+                    showError(type, 'Network error occurred');
+                    uploadBtn.disabled = false;
+                });
+                
+                xhr.open('POST', '/upload');
+                xhr.send(formData);
+            } catch (error) {
+                showError(type, error.message);
+                uploadBtn.disabled = false;
+            }
+        }
+
+        function showError(type, message) {
+            const errorEl = document.getElementById(type + '-error');
+            errorEl.textContent = '❌ ' + message;
+            errorEl.classList.add('show');
+            document.getElementById(type + '-progress').classList.remove('show');
+        }
+
+        ['movie', 'tv'].forEach(type => {
+            const dropZone = document.getElementById(type + '-drop-zone');
+            const fileInput = document.getElementById(type + '-file-input');
+            
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) handleFileSelect(type, e.target.files[0]);
+            });
+            
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) handleFileSelect(type, e.dataTransfer.files[0]);
+            });
+        });
+    </script>
+</body>
+</html>

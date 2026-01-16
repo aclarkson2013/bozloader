@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - My Uploads</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --teal: #5DCDCD; --teal-dark: #3BA5A5; --light-blue: #B8E0E0;
+            --sky-blue: #E0F4F4; --pink: #E83D5F; --pink-dark: #C42848;
+            --yellow: #FFD166; --yellow-light: #FFF0CC; --cream: #FDF8F3;
+            --white: #FFFFFF; --dark: #2C3E50; --gray: #7F8C8D;
+            --green: #4CAF50; --green-dark: #388E3C;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--sky-blue) 0%, var(--light-blue) 50%, var(--teal) 100%);
+            min-height: 100vh; color: var(--dark);
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; flex-wrap: wrap; gap: 15px; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .logo { width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 15px rgba(93, 205, 205, 0.3); }
+        .app-title { font-family: 'Quicksand', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--dark); }
+        .nav-link { color: var(--dark); text-decoration: none; font-weight: 600; padding: 10px 20px; background: var(--white); border-radius: 25px; transition: all 0.3s ease; }
+        .nav-link:hover { background: var(--yellow); transform: translateY(-2px); }
+        .user-card { background: var(--white); border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 20px; }
+        .user-avatar { width: 70px; height: 70px; background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--white); }
+        .user-details h2 { font-family: 'Quicksand', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--dark); }
+        .user-details p { color: var(--gray); margin-top: 5px; }
+        .section { background: var(--white); border-radius: 25px; padding: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+        .section-title { font-family: 'Quicksand', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .upload-list { display: flex; flex-direction: column; gap: 15px; }
+        .upload-item { background: var(--sky-blue); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .upload-icon { width: 50px; height: 50px; background: var(--teal); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--white); flex-shrink: 0; }
+        .upload-icon.movie { background: var(--pink); }
+        .upload-icon.tv { background: var(--yellow); }
+        .upload-details { flex: 1; min-width: 200px; }
+        .upload-filename { font-weight: 700; color: var(--dark); font-size: 1.05rem; word-break: break-all; }
+        .upload-meta { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 8px; color: var(--gray); font-size: 0.9rem; }
+        .upload-meta span { display: flex; align-items: center; gap: 5px; }
+        .status-badge { padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .status-pending { background: var(--yellow-light); color: #B8860B; }
+        .status-approved { background: #E8F5E9; color: var(--green-dark); }
+        .status-denied { background: #FFEBEE; color: var(--pink-dark); }
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--gray); }
+        .empty-icon { font-size: 5rem; margin-bottom: 20px; opacity: 0.5; }
+        .empty-text { font-size: 1.2rem; margin-bottom: 20px; }
+        .empty-btn { display: inline-block; padding: 15px 30px; background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%); color: var(--white); text-decoration: none; border-radius: 12px; font-weight: 700; transition: all 0.3s ease; }
+        .empty-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(93, 205, 205, 0.4); }
+        @media (max-width: 600px) {
+            .header { flex-direction: column; align-items: flex-start; }
+            .user-card { flex-direction: column; text-align: center; }
+            .upload-item { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <img src="{{ url_for('serve_image', filename='bosley_logo.png') }}" alt="Bosley" class="logo">
+                <h1 class="app-title">{{ app_name }}</h1>
+            </div>
+            <a href="/" class="nav-link">← Upload More</a>
+        </div>
+
+        <div class="user-card">
+            <div class="user-avatar">👤</div>
+            <div class="user-details">
+                <h2>My Uploads</h2>
+                <p>{{ user_email }}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📋 Upload History</div>
+            {% if uploads|length > 0 %}
+            <div class="upload-list">
+                {% for upload in uploads %}
+                <div class="upload-item">
+                    <div class="upload-icon {{ upload.media_type }}">{% if upload.media_type == 'movie' %}🎬{% else %}📺{% endif %}</div>
+                    <div class="upload-details">
+                        <div class="upload-filename">{{ upload.original_filename }}</div>
+                        <div class="upload-meta">
+                            <span>📅 {{ upload.upload_date[:16].replace('T', ' ') }}</span>
+                            <span>💾 {{ get_file_size_str(upload.file_size) }}</span>
+                            <span class="status-badge status-{{ upload.status }}">{{ upload.status }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <div class="empty-text">You haven't uploaded anything yet!</div>
+                <a href="/" class="empty-btn">🚀 Upload Your First File</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

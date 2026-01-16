@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  bozloader:
+    build: .
+    container_name: bozloader
+    restart: unless-stopped
+    ports:
+      - "8082:5000"
+    volumes:
+      # Database persistence
+      - ./database:/app/database
+      
+      # Pending uploads (where uploads go before approval)
+      - /mnt/plex-staging/Pending/movies:/data/pending/movies
+      - /mnt/plex-staging/Pending/tv:/data/pending/tv
+      
+      # Plex library folders (where approved files go)
+      - /mnt/plex-staging/Plex-Library/movies:/data/plex/movies
+      - /mnt/plex-staging/Plex-Library/tv:/data/plex/tv
+      
+    env_file:
+      - .env
+    environment:
+      - TZ=America/Chicago
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - bozloader-network
+
+networks:
+  bozloader-network:
+    driver: bridge
