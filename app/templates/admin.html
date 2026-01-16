@@ -3,262 +3,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ app_name }} - Admin Panel</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <title>Admin Panel - {{ app_name }}</title>
     <style>
-        :root {
-            --teal: #5DCDCD; --teal-dark: #3BA5A5; --light-blue: #B8E0E0;
-            --sky-blue: #E0F4F4; --pink: #E83D5F; --pink-dark: #C42848;
-            --yellow: #FFD166; --yellow-light: #FFF0CC; --cream: #FDF8F3;
-            --white: #FFFFFF; --dark: #2C3E50; --gray: #7F8C8D;
-            --green: #4CAF50; --green-dark: #388E3C;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--sky-blue) 0%, var(--light-blue) 50%, var(--teal) 100%);
-            min-height: 100vh; color: var(--dark);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #F7FAFC;
+            min-height: 100vh;
+            padding: 20px;
         }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .header { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; flex-wrap: wrap; gap: 15px; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .logo { width: 60px; height: 60px; border-radius: 50%; box-shadow: 0 4px 15px rgba(93, 205, 205, 0.3); }
-        .app-title { font-family: 'Quicksand', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--dark); }
-        .admin-badge { background: var(--pink); color: var(--white); padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; }
-        .nav-link { color: var(--dark); text-decoration: none; font-weight: 600; padding: 10px 20px; background: var(--white); border-radius: 25px; transition: all 0.3s ease; }
-        .nav-link:hover { background: var(--yellow); transform: translateY(-2px); }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: var(--white); padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
-        .stat-icon { font-size: 2.5rem; margin-bottom: 10px; }
-        .stat-value { font-family: 'Quicksand', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--dark); }
-        .stat-label { color: var(--gray); font-weight: 600; margin-top: 5px; }
-        .section { background: var(--white); border-radius: 25px; padding: 30px; margin-bottom: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
-        .section-title { font-family: 'Quicksand', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .pending-badge { background: var(--yellow); color: var(--dark); padding: 3px 12px; border-radius: 15px; font-size: 0.9rem; }
-        .upload-list { display: flex; flex-direction: column; gap: 15px; }
-        .upload-item { background: var(--sky-blue); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; transition: all 0.3s ease; }
-        .upload-item:hover { transform: translateX(5px); box-shadow: 0 5px 20px rgba(93, 205, 205, 0.2); }
-        .upload-icon { width: 50px; height: 50px; background: var(--teal); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--white); flex-shrink: 0; }
-        .upload-icon.movie { background: var(--pink); }
-        .upload-icon.tv { background: var(--yellow); }
-        .upload-details { flex: 1; min-width: 200px; }
-        .upload-filename { font-weight: 700; color: var(--dark); font-size: 1.05rem; word-break: break-all; }
-        .upload-meta { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 8px; color: var(--gray); font-size: 0.9rem; }
-        .upload-meta span { display: flex; align-items: center; gap: 5px; }
-        .upload-actions { display: flex; gap: 10px; flex-shrink: 0; }
-        .action-btn { padding: 12px 25px; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; }
-        .approve-btn { background: var(--green); color: var(--white); }
-        .approve-btn:hover { background: var(--green-dark); transform: translateY(-2px); }
-        .deny-btn { background: var(--pink); color: var(--white); }
-        .deny-btn:hover { background: var(--pink-dark); transform: translateY(-2px); }
-        .action-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
-        .status-badge { padding: 5px 12px; border-radius: 15px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
-        .status-pending { background: var(--yellow-light); color: #B8860B; }
-        .status-approved { background: #E8F5E9; color: var(--green-dark); }
-        .status-denied { background: #FFEBEE; color: var(--pink-dark); }
-        .empty-state { text-align: center; padding: 50px 20px; color: var(--gray); }
-        .empty-icon { font-size: 4rem; margin-bottom: 15px; opacity: 0.5; }
-        .empty-text { font-size: 1.1rem; }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-overlay.show { display: flex; }
-        .modal { background: var(--white); border-radius: 25px; padding: 35px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.2); animation: modalIn 0.3s ease-out; }
-        @keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        .modal-title { font-family: 'Quicksand', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--dark); margin-bottom: 15px; }
-        .modal-text { color: var(--gray); margin-bottom: 20px; }
-        .modal-input { width: 100%; padding: 15px; border: 2px solid var(--light-blue); border-radius: 12px; font-family: 'Nunito', sans-serif; font-size: 1rem; margin-bottom: 20px; resize: vertical; }
-        .modal-input:focus { outline: none; border-color: var(--teal); }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-        .modal-btn { padding: 12px 25px; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
-        .modal-btn.cancel { background: var(--light-blue); color: var(--dark); }
-        .modal-btn.confirm { background: var(--pink); color: var(--white); }
-        .toast { position: fixed; bottom: 30px; right: 30px; padding: 15px 25px; border-radius: 12px; color: var(--white); font-weight: 600; box-shadow: 0 5px 20px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 1001; }
-        .toast.show { transform: translateY(0); opacity: 1; }
-        .toast.success { background: var(--green); }
-        .toast.error { background: var(--pink); }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            font-size: 36px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 24px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        
+        .btn-secondary {
+            background: #E2E8F0;
+            color: #4A5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #CBD5E0;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #E2E8F0;
+            color: #718096;
+        }
+        
+        .btn-outline:hover {
+            border-color: #CBD5E0;
+            background: #F7FAFC;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash {
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .flash.error {
+            background: #FFE5E5;
+            color: #C53030;
+            border: 1px solid #FEB2B2;
+        }
+        
+        .flash.success {
+            background: #E6FFFA;
+            color: #234E52;
+            border: 1px solid #81E6D9;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #E2E8F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .section-header h2 {
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .badge {
+            background: #E83D5F;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .badge.empty {
+            background: #CBD5E0;
+        }
+        
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #A0AEC0;
+        }
+        
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .upload-list {
+            list-style: none;
+        }
+        
+        .upload-item {
+            padding: 20px 24px;
+            border-bottom: 1px solid #E2E8F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .upload-item:last-child {
+            border-bottom: none;
+        }
+        
+        .upload-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .upload-filename {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            word-break: break-all;
+        }
+        
+        .upload-meta {
+            font-size: 13px;
+            color: #718096;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .upload-meta span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .type-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .type-badge.movie {
+            background: #E6FFFA;
+            color: #234E52;
+        }
+        
+        .type-badge.tv {
+            background: #FFF5F5;
+            color: #742A2A;
+        }
+        
+        .upload-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-approve {
+            background: #48BB78;
+            color: white;
+        }
+        
+        .btn-approve:hover {
+            background: #38A169;
+        }
+        
+        .btn-deny {
+            background: #E83D5F;
+            color: white;
+        }
+        
+        .btn-deny:hover {
+            background: #C53030;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-badge.approved {
+            background: #C6F6D5;
+            color: #22543D;
+        }
+        
+        .status-badge.denied {
+            background: #FED7D7;
+            color: #742A2A;
+        }
+        
+        .status-badge.pending {
+            background: #FEFCBF;
+            color: #744210;
+        }
+        
         @media (max-width: 768px) {
-            .header { flex-direction: column; align-items: flex-start; }
-            .upload-item { flex-direction: column; align-items: flex-start; }
-            .upload-actions { width: 100%; }
-            .action-btn { flex: 1; justify-content: center; }
+            header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .upload-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .upload-actions {
+                width: 100%;
+            }
+            
+            .upload-actions form {
+                flex: 1;
+            }
+            
+            .upload-actions .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <div class="header-left">
-                <img src="{{ url_for('serve_image', filename='bosley_logo.png') }}" alt="Bosley" class="logo">
-                <h1 class="app-title">{{ app_name }}</h1>
-                <span class="admin-badge">Admin</span>
+        <header>
+            <div class="logo-section">
+                <span class="logo">🐕</span>
+                <h1>{{ app_name }} Admin</h1>
             </div>
-            <a href="/" class="nav-link">← Back to Upload</a>
-        </div>
-
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-icon">📬</div>
-                <div class="stat-value">{{ pending|length }}</div>
-                <div class="stat-label">Pending Review</div>
+            <div class="header-actions">
+                <a href="{{ url_for('admin_change_password') }}" class="btn btn-outline">Change Password</a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Upload Page</a>
+                <a href="{{ url_for('admin_logout') }}" class="btn btn-outline">Logout</a>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-value">{{ processed|selectattr('status', 'equalto', 'approved')|list|length }}</div>
-                <div class="stat-label">Approved</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">❌</div>
-                <div class="stat-value">{{ processed|selectattr('status', 'equalto', 'denied')|list|length }}</div>
-                <div class="stat-label">Denied</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">
-                📬 Pending Uploads
-                {% if pending|length > 0 %}<span class="pending-badge">{{ pending|length }} waiting</span>{% endif %}
-            </div>
-            {% if pending|length > 0 %}
-            <div class="upload-list">
-                {% for upload in pending %}
-                <div class="upload-item" id="upload-{{ upload.id }}">
-                    <div class="upload-icon {{ upload.media_type }}">{% if upload.media_type == 'movie' %}🎬{% else %}📺{% endif %}</div>
-                    <div class="upload-details">
-                        <div class="upload-filename">{{ upload.original_filename }}</div>
-                        <div class="upload-meta">
-                            <span>👤 {{ upload.uploader_email }}</span>
-                            <span>📅 {{ upload.upload_date[:16].replace('T', ' ') }}</span>
-                            <span>💾 {{ get_file_size_str(upload.file_size) }}</span>
-                        </div>
-                    </div>
-                    <div class="upload-actions">
-                        <button class="action-btn approve-btn" onclick="approveUpload('{{ upload.id }}')">✅ Approve</button>
-                        <button class="action-btn deny-btn" onclick="showDenyModal('{{ upload.id }}', '{{ upload.original_filename }}')">❌ Deny</button>
-                    </div>
+        </header>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <!-- Pending Uploads -->
+        <div class="section">
+            <div class="section-header">
+                <h2>Pending Uploads</h2>
+                <span class="badge {% if not pending %}empty{% endif %}">
+                    {{ pending|length if pending else 0 }}
+                </span>
             </div>
+            
+            {% if pending %}
+                <ul class="upload-list">
+                    {% for upload in pending %}
+                    <li class="upload-item">
+                        <div class="upload-info">
+                            <div class="upload-filename">{{ upload['original_filename'] }}</div>
+                            <div class="upload-meta">
+                                <span class="type-badge {{ upload['media_type'] }}">
+                                    {{ upload['media_type'] }}
+                                </span>
+                                <span>📧 {{ upload['uploader_email'] }}</span>
+                                <span>📊 {{ get_file_size_str(upload['file_size']) }}</span>
+                                <span>🕐 {{ upload['upload_date'] }}</span>
+                            </div>
+                            {% if upload['notes'] %}
+                            <div style="margin-top: 8px; font-size: 13px; color: #718096;">
+                                📝 {{ upload['notes'] }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="upload-actions">
+                            <form action="{{ url_for('approve_upload', upload_id=upload['id']) }}" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-approve">✓ Approve</button>
+                            </form>
+                            <form action="{{ url_for('deny_upload', upload_id=upload['id']) }}" method="POST" style="display: inline;" 
+                                  onsubmit="return confirm('Are you sure you want to deny this upload?');">
+                                <button type="submit" class="btn btn-deny">✗ Deny</button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
             {% else %}
-            <div class="empty-state">
-                <div class="empty-icon">📭</div>
-                <div class="empty-text">No pending uploads. All caught up! 🎉</div>
-            </div>
+                <div class="empty-state">
+                    <div class="icon">📭</div>
+                    <p>No pending uploads</p>
+                </div>
             {% endif %}
         </div>
-
+        
+        <!-- Recent Activity -->
         <div class="section">
-            <div class="section-title">📋 Recent Activity</div>
-            {% if processed|length > 0 %}
-            <div class="upload-list">
-                {% for upload in processed[:20] %}
-                <div class="upload-item" style="opacity: 0.8;">
-                    <div class="upload-icon {{ upload.media_type }}">{% if upload.media_type == 'movie' %}🎬{% else %}📺{% endif %}</div>
-                    <div class="upload-details">
-                        <div class="upload-filename">{{ upload.original_filename }}</div>
-                        <div class="upload-meta">
-                            <span>👤 {{ upload.uploader_email }}</span>
-                            <span>📅 {{ upload.reviewed_date[:16].replace('T', ' ') if upload.reviewed_date else 'N/A' }}</span>
-                            <span class="status-badge status-{{ upload.status }}">{{ upload.status }}</span>
+            <div class="section-header">
+                <h2>Recent Activity</h2>
+            </div>
+            
+            {% if recent %}
+                <ul class="upload-list">
+                    {% for upload in recent %}
+                    <li class="upload-item">
+                        <div class="upload-info">
+                            <div class="upload-filename">{{ upload['original_filename'] }}</div>
+                            <div class="upload-meta">
+                                <span class="type-badge {{ upload['media_type'] }}">
+                                    {{ upload['media_type'] }}
+                                </span>
+                                <span class="status-badge {{ upload['status'] }}">
+                                    {{ upload['status'] }}
+                                </span>
+                                <span>📧 {{ upload['uploader_email'] }}</span>
+                                <span>🕐 {{ upload['upload_date'] }}</span>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+                    </li>
+                    {% endfor %}
+                </ul>
             {% else %}
-            <div class="empty-state">
-                <div class="empty-icon">📝</div>
-                <div class="empty-text">No recent activity yet.</div>
-            </div>
+                <div class="empty-state">
+                    <div class="icon">📋</div>
+                    <p>No recent activity</p>
+                </div>
             {% endif %}
         </div>
     </div>
-
-    <div class="modal-overlay" id="deny-modal">
-        <div class="modal">
-            <div class="modal-title">❌ Deny Upload</div>
-            <div class="modal-text">Are you sure you want to deny <strong id="deny-filename"></strong>?<br><br>The file will be deleted and the uploader will be notified.</div>
-            <textarea class="modal-input" id="deny-notes" placeholder="Optional: Add a note explaining why (will be sent to uploader)..." rows="3"></textarea>
-            <div class="modal-actions">
-                <button class="modal-btn cancel" onclick="closeDenyModal()">Cancel</button>
-                <button class="modal-btn confirm" onclick="confirmDeny()">Deny Upload</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="toast" id="toast"></div>
-
-    <script>
-        let currentDenyId = null;
-
-        async function approveUpload(uploadId) {
-            const btn = event.target;
-            btn.disabled = true;
-            btn.innerHTML = '⏳ Processing...';
-            try {
-                const response = await fetch('/admin/approve/' + uploadId, { method: 'POST' });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('Upload approved and added to Plex! 🎉', 'success');
-                    document.getElementById('upload-' + uploadId).remove();
-                    updateStats();
-                } else {
-                    showToast(data.error || 'Failed to approve', 'error');
-                    btn.disabled = false;
-                    btn.innerHTML = '✅ Approve';
-                }
-            } catch (error) {
-                showToast('Network error', 'error');
-                btn.disabled = false;
-                btn.innerHTML = '✅ Approve';
-            }
-        }
-
-        function showDenyModal(uploadId, filename) {
-            currentDenyId = uploadId;
-            document.getElementById('deny-filename').textContent = filename;
-            document.getElementById('deny-notes').value = '';
-            document.getElementById('deny-modal').classList.add('show');
-        }
-
-        function closeDenyModal() {
-            document.getElementById('deny-modal').classList.remove('show');
-            currentDenyId = null;
-        }
-
-        async function confirmDeny() {
-            if (!currentDenyId) return;
-            const notes = document.getElementById('deny-notes').value;
-            const formData = new FormData();
-            formData.append('notes', notes);
-            try {
-                const response = await fetch('/admin/deny/' + currentDenyId, { method: 'POST', body: formData });
-                const data = await response.json();
-                if (data.success) {
-                    showToast('Upload denied and deleted', 'success');
-                    document.getElementById('upload-' + currentDenyId).remove();
-                    closeDenyModal();
-                    updateStats();
-                } else {
-                    showToast(data.error || 'Failed to deny', 'error');
-                }
-            } catch (error) {
-                showToast('Network error', 'error');
-            }
-        }
-
-        function updateStats() { setTimeout(() => location.reload(), 1500); }
-
-        function showToast(message, type) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.className = 'toast ' + type + ' show';
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
-        }
-
-        document.getElementById('deny-modal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('deny-modal')) closeDenyModal();
-        });
-    </script>
 </body>
 </html>

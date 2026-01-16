@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   bozloader:
     build: .
@@ -12,12 +10,12 @@ services:
       - ./database:/app/database
       
       # Pending uploads (where uploads go before approval)
-      - /mnt/plex-staging/Pending/movies:/data/pending/movies
-      - /mnt/plex-staging/Pending/tv:/data/pending/tv
+      - /mnt/qnap-plex/Pending/movies:/data/pending/movies
+      - /mnt/qnap-plex/Pending/tv:/data/pending/tv
       
       # Plex library folders (where approved files go)
-      - /mnt/plex-staging/Plex-Library/movies:/data/plex/movies
-      - /mnt/plex-staging/Plex-Library/tv:/data/plex/tv
+      - /mnt/qnap-plex/Movies:/data/plex/movies
+      - "/mnt/qnap-plex/TV Shows:/data/plex/tv"
       
     env_file:
       - .env
